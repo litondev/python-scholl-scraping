@@ -1,0 +1,146 @@
+import requests
+import time
+from bs4 import BeautifulSoup
+
+# results = soup.find(id="box-table-a")
+# print(results.prettify())
+
+def get_provinsi():        
+    url = "https://referensi.data.kemdikbud.go.id/index11.php"
+
+    provinsi_page = requests.get(url)
+
+    soup = BeautifulSoup(provinsi_page.content, "html.parser")
+    # get tbody
+    tbody_results = soup.find("tbody");
+
+    # get list provinsi
+    tr_results = tbody_results.find_all("tr");
+
+    # foreach list provinsi
+    for index_tr,tr in enumerate(tr_results):
+
+        # find all td
+        td_results = tr.find_all("td")
+        
+        # foreach list td
+        for index_td,td in enumerate(td_results):
+        # get link 1 td
+            if(index_td == 1):
+                ps = td.find("a");
+                if(ps != None) :
+                    first_code = ps["href"][17:];
+                    last_code = first_code[:6]                            
+                    get_kabpuaten(last_code)
+                    # pass
+                    # print(ps["href"])
+                print(td.get_text())    
+        time.sleep(2)
+    time.sleep(3)
+
+def get_kabpuaten(kode):
+    url = "https://referensi.data.kemdikbud.go.id/index11.php?kode="+kode+"&level=1"
+
+    provinsi_page = requests.get(url)
+
+    soup = BeautifulSoup(provinsi_page.content, "html.parser")
+    # get tbody
+    tbody_results = soup.find("tbody");
+    # foreach list provinsi
+    tr_results = tbody_results.find_all("tr");
+    for index_tr,tr in enumerate(tr_results):
+
+        # find all td
+        td_results = tr.find_all("td")
+        
+        # foreach list td
+        for index_td,td in enumerate(td_results):
+        # get link 1 td
+            if(index_td == 1):
+                ps = td.find("a");
+                if(ps != None) :
+                    first_code = ps["href"][17:];
+                    last_code = first_code[:6]                            
+                    get_kecamatan(last_code)
+                    # get_kabpuaten()
+                    # pass
+                    # print(ps["href"])
+                print(td.get_text())    
+        time.sleep(2)
+    time.sleep(3)
+
+def get_kecamatan(kode):
+    url = "https://referensi.data.kemdikbud.go.id/index11.php?kode="+kode+"&level=2"
+
+    provinsi_page = requests.get(url)
+
+    soup = BeautifulSoup(provinsi_page.content, "html.parser")
+    # get tbody
+    tbody_results = soup.find("tbody");
+    # foreach list provinsi
+    tr_results = tbody_results.find_all("tr");
+    for index_tr,tr in enumerate(tr_results):
+
+        # find all td
+        td_results = tr.find_all("td")
+        
+        # foreach list td
+        for index_td,td in enumerate(td_results):
+        # get link 1 td
+            if(index_td == 1):
+                ps = td.find("a");
+                if(ps != None) :
+                    first_code = ps["href"][17:];
+                    last_code = first_code[:6]                            
+                    get_sekolah(last_code)
+                    # get_kabpuaten()
+                    # pass
+                    # print(ps["href"])
+                print(td.get_text())    
+        time.sleep(2)
+    time.sleep(3)
+
+def get_sekolah(kode):
+    print(kode)
+    url = "https://referensi.data.kemdikbud.go.id/index11.php?kode="+kode+"&level=3"
+
+    provinsi_page = requests.get(url)
+
+    soup = BeautifulSoup(provinsi_page.content, "html.parser")
+
+    aps = soup.find("table",{
+        "cellpadding" : 0,
+        "cellspacing" : 0,
+        "border" : 0,
+        "class" : "display",
+        "id" : "example"
+    })
+
+    print(aps.prettify())
+    # get tbody    
+    # tbody_results = soup.find("tbody",{"role" : "alert","area-live": "polite","aria-relevant": "all"});
+    # print(tbody_results)
+    # foreach list provinsi
+    # tr_results = tbody_results.find_all("tr");
+    # for index_tr,tr in enumerate(tr_results):
+
+    #     # find all td
+    #     td_results = tr.find_all("td")
+        
+    #     # foreach list td
+    #     for index_td,td in enumerate(td_results):
+    #     # get link 1 td
+    #         if(index_td == 1):
+    #             # ps = td.find("a");
+    #             # if(ps != None) :
+    #             #     first_code = ps["href"][17:];
+    #             #     last_code = first_code[:6]                            
+    #                 # get_sekolah(last_code)
+    #                 # get_kabpuaten()
+    #                 # pass
+    #                 # print(ps["href"])
+    #             print(td.get_text())    
+    #     time.sleep(2)
+    # time.sleep(3)
+
+# get_provinsi()
