@@ -66,6 +66,7 @@ def dump_cites(provinsi):
             mydb.commit()
             time.sleep(1)
 
+        print("Execute Done")
         mycursor.execute("SELECT id,code,province_id,name,done_childs FROM cites where province_id='"+str(provinsi[0])+"'")
         myresult = mycursor.fetchall()    
         return myresult;
@@ -92,6 +93,7 @@ def dump_districts(city):
             mydb.commit()
             time.sleep(1)
 
+        print("Execute Done")
         mycursor.execute("SELECT id,code,city_id,name,done_level_tk_childs,done_level_sd_childs,done_level_smp_childs,done_level_smk_childs,done_level_sma_childs,done_level_slb_childs FROM districts where city_id='"+str(city[0])+"'")
         myresult = mycursor.fetchall()        
         return myresult;
@@ -100,7 +102,68 @@ def dump_districts(city):
 def dump_schools():
     pass 
 
+def get_cites():
+    provinces = dump_provinces()
 
+    # provinsi[0] => id
+    # provinsi[1] => kode
+    # provinsi[2] => name
+    # provinsi[3] => done_childs
+    
+
+    for provinsi in provinces:      
+        if(int(provinsi[3]) == 1) :
+            print(provinsi[0])
+            continue;       
+    
+        mycursor.execute("DELETE FROM cites WHERE province_id='"+str(provinsi[0])+"'")
+        mydb.commit()
+        time.sleep(1)
+        
+        try:
+            dump_cites(provinsi)
+        except Exception:
+            print("Terjadi Kesalahan")
+            break;
+
+
+        time.sleep(3)
+
+        mycursor.execute("UPDATE provinces SET done_childs=1 where id='"+str(provinsi[0])+"'")
+
+        print("Done "+provinsi[2])
+
+    return True
+            
+
+def get_districts():
+    mycursor.execute("SELECT id,code,province_id,name,done_childs FROM cites")
+
+    # city[0] => id
+    # city[1] => kode
+    # city[2] => province_id
+    # city[3] => name
+    # city[4] => done_childs
+
+    for city in mycursor.fetchall():      
+        if(int(city[4]) == 1) :
+            print(city[0])
+            continue;       
+
+        mycursor.execute("DELETE FROM districts WHERE city_id='"+str(city[0])+"'")
+        mydb.commit()
+        time.sleep(1)
+
+        dump_districts(city)           
+
+        time.sleep(3)
+
+        mycursor.execute("UPDATE cites SET done_childs=1 where id='"+str(city[0])+"'")
+
+        print("Done "+city[3])
+
+    return True
+            
 while True:        
     print();
     print("--------")
@@ -144,59 +207,28 @@ while True:
     elif command == "4" :
         print("Dump Sekolah")
         break;
-    elif command == "3" :
-        mycursor.execute("SELECT id,code,province_id,name,done_childs FROM cites")
+    elif command == "3" :        
+        try:
+            is_done = get_districts();
+            if is_done == True:
+                    print("Process Done")
+            else:
+                print("Process Not Done")
+        except Exception:
+            print("==== Terjadi Kesalahan ===")
 
-        # city[0] => id
-        # city[1] => kode
-        # city[2] => province_id
-        # city[3] => name
-        # city[4] => done_childs
-
-        for city in mycursor.fetchall():      
-            if(int(city[4]) == 1) :
-                print(city[0])
-                continue;       
-
-            mycursor.execute("DELETE FROM districts WHERE city_id='"+str(city[0])+"'")
-            mydb.commit()
-            time.sleep(1)
-
-            dump_districts(city)
-
-            time.sleep(3)
-
-            mycursor.execute("UPDATE cites SET done_childs=1 where id='"+str(city[0])+"'")
-
-            print("Done "+city[3])
-            
         print("Dump Kecamatan")
         break;
     elif command == "2" :
-        provinces = dump_provinces()
+        try:
+            is_done = get_cites();
+            if is_done == True:
+                print("Process Done")
+            else:
+                print("Process Not Done")
+        except Exception:
+            print("==== Terjadi Kesalahan ===")
 
-        # provinsi[0] => id
-        # provinsi[1] => kode
-        # provinsi[2] => name
-        # provinsi[3] => done_childs
-
-        for provinsi in provinces:      
-            if(int(provinsi[3]) == 1) :
-                print(provinsi[0])
-                continue;       
-        
-            mycursor.execute("DELETE FROM cites WHERE province_id='"+str(provinsi[0])+"'")
-            mydb.commit()
-            time.sleep(1)
-
-            dump_cites(provinsi)
-
-            time.sleep(3)
-
-            mycursor.execute("UPDATE provinces SET done_childs=1 where id='"+str(provinsi[0])+"'")
-
-            print("Done "+provinsi[2])
-                
         print("Dump Kota")
         break;
     elif command == "1" : 
