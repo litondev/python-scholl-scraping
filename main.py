@@ -58,7 +58,11 @@ def dump_cites(provinsi):
 
         for city in cites:                    
             name = city["nama"][5:];
-            mycursor.execute("INSERT INTO cites SET name='"+name.strip()+"',code='"+city['kode_wilayah'].strip()+"',province_id='"+str(provinsi[0])+"'")
+            is_city = city["nama"][3::-1][::-1].strip();
+            if is_city == "Kota" or is_city == "KOTA" or is_city == "kota":
+                mycursor.execute("INSERT INTO cites SET name='"+name.strip()+"',code='"+city['kode_wilayah'].strip()+"',is_city=1,province_id='"+str(provinsi[0])+"'")
+            else :
+                mycursor.execute("INSERT INTO cites SET name='"+name.strip()+"',code='"+city['kode_wilayah'].strip()+"',province_id='"+str(provinsi[0])+"'")
             mydb.commit()
             time.sleep(1)
 
@@ -181,7 +185,7 @@ while True:
                 print(provinsi[0])
                 continue;       
         
-            mycursor.execute("DELETE FROM cites WHERE provinsi_id='"+str(provinsi[0])+"'")
+            mycursor.execute("DELETE FROM cites WHERE province_id='"+str(provinsi[0])+"'")
             mydb.commit()
             time.sleep(1)
 

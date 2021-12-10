@@ -35,6 +35,7 @@ CREATE TABLE `cites` (
   `code` varchar(10) DEFAULT NULL,
   `name` VARCHAR(255) DEFAULT NULL,
   `province_id` bigInt(20) unsigned NULL DEFAULT NULL,
+  `is_city` tinyInt DEFAULT 0,
   `done_childs` tinyInt DEFAULT 0,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
