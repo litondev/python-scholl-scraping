@@ -74,6 +74,8 @@ def cites(provinsi):
 
         page_cites = requests.get(url_cites,timeout=10)
 
+        print(page_cites.content)
+
         print("Get Json")
 
         cites_data = json.loads(page_cites.content)
@@ -130,6 +132,8 @@ def districts(city):
         print("Request Send")
 
         page_districts = requests.get(url_districts,timeout=10)
+
+        print(page_districts.content)
 
         print("Get Json")    
 
