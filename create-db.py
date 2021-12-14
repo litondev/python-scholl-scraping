@@ -68,10 +68,11 @@ CREATE TABLE `districts` (
 mycursor.execute("""
 CREATE TABLE `schools` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-  `code` varchar(10) DEFAULT NULL,
+  `code` text DEFAULT NULL,
   `district_id` bigInt(20) unsigned NULL DEFAULT NULL,
   `name` VARCHAR(255)  DEFAULT NULL,
   `member` bigInt(20) DEFAULT 0,
+  `is_private` tinyInt DEFAULT 1,
   `level` enum('TK','SD','SMP','SMK','SMA','SLB') COLLATE utf8mb4_unicode_ci DEFAULT 'SD',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,

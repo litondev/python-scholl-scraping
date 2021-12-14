@@ -172,5 +172,67 @@ def districts(city):
         print()
         districts(city)
        
-# def dump_schools():
-#     pass 
+def schools(district,level):
+    try:
+        id_level_wilayah = "3"
+        kode_wilayah = district[1]
+        year = "2020"
+        semester_id = "1"                   
+
+        url_schools = "https://dapo.kemdikbud.go.id/rekap/progresSP?id_level_wilayah=" + str(id_level_wilayah) + "&kode_wilayah=" + str(kode_wilayah) + "&semester_id=" + str(year) +""+ str(semester_id)+"&bentuk_pendidikan_id="+level;
+
+        print(url_schools);
+
+        print("Request Send")
+
+        page_schools = requests.get(url_schools,timeout=10)
+
+        # print(page_schools.content)
+
+        print("Get Json")    
+
+        schools_data = json.loads(page_schools.content)
+
+        print("Done Get Json")
+
+        if len(schools_data) == 0:
+            print("Data tidak ditemukan")
+
+            return False
+        else :    
+            print("Process Dump")         
+                    
+            for school in schools_data:    
+                database.mycursor.execute("SELECT id FROM schools where code='"+school['sekolah_id'].strip()+"'")
+                myresult = database.mycursor.fetchall()
+                if(len(myresult) > 0):
+                    continue;             
+
+                status_sekolah = 0;
+                
+                if(school['status_sekolah'].lower() == 'swasta'):
+                    status_sekolah = 1;
+
+                peserta_didik = school["pd"];
+
+                if(peserta_didik == None):
+                    peserta_didik = "0"
+                else:
+                    peserta_didik = str(peserta_didik)                                            
+                    
+                database.mycursor.execute("INSERT INTO schools SET name='"+str(school['nama']).strip()+"',code='"+str(school['sekolah_id']).strip()+"',district_id='"+str(district[0])+"',member='"+peserta_didik+"',is_private='"+str(status_sekolah)+"',level='"+level.upper()+"'")
+                database.mydb.commit()
+                time.sleep(2)
+
+            print("Done Dump")                
+            return True
+    except Exception as e:
+        print()
+        print("Terjadi Kesalahan => ")
+        print(e)
+        print()
+        print("Dump Will Repeat Again After 30 Seconds . . .")
+        time.sleep(30)
+        print("Start Repeat Again")
+        print()
+        schools(district,level)

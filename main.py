@@ -43,6 +43,13 @@ while True:
         print()
         break;
     elif command == "4" :
+        is_done = get_data.schools()
+
+        if is_done == True :
+            print("Success Dump Schools")
+        else :
+            print("Failed Dump Schools") 
+
         print("Dump Sekolah")
         print()
         break;
